@@ -1,19 +1,35 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { projects } from './projects.js';
 import './style.css';
 
-const projects = [
-  { id: '01', title: 'Veil登神长阶', type: 'VALORANT · FRAG MOVIE', year: '2025', video: '/videos/cxyveil.mp4', note: '高光时刻，值得被重新看见' },
-  { id: '02', title: 'MAMA', type: 'CS · FRAG MOVIE', year: '2025', video: '/videos/H9999.mp4', note: '把每一次精准击杀，留在节奏里' },
-  { id: '03', title: '卡点', type: 'FPS · RHYTHM EDIT', year: '2025', video: '/videos/ka-dian.mp4', note: '缘分落地生根是我们' },
-  { id: '04', title: '馈赠', type: 'FPS · FRAG MOVIE', year: '2025', video: '/videos/gift.mp4', note: '把高光时刻，留给值得记住的瞬间' },
-  { id: '05', title: '残局开头', type: 'FPS · FRAG MOVIE', year: '2025', video: '/videos/AAAme.mp4', note: '让操作与音乐，在同一个瞬间爆发' },
-  { id: '06', title: '随便搞搞', type: 'FPS · FRAG MOVIE', year: '2026', video: '/videos/随便搞搞.mp4', note: '把每一帧灵感，剪成新的高光' },
-  { id: '07', title: '切刀慢动作', type: 'FPS · GAMEPLAY EDIT', year: '2025', video: '/videos/15.mp4', note: '缘分落地生根是我们' },
-];
-
 function Works() {
+  React.useEffect(() => {
+    const elements = [...document.querySelectorAll('.works-content .section-kicker, .works-heading, .full-project, .works-home-link')];
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('motion-visible'));
+      return undefined;
+    }
+    const siblingIndexes = new Map();
+    elements.forEach((element) => {
+      const parent = element.parentElement;
+      const index = siblingIndexes.get(parent) ?? 0;
+      siblingIndexes.set(parent, index + 1);
+      element.style.setProperty('--motion-delay', `${Math.min(index * 90, 360)}ms`);
+      element.classList.add('motion-reveal');
+    });
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('motion-visible');
+        currentObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
   return <main className="works-page">
     <header className="nav nav-scrolled works-nav">
       <a href="/#home" className="brand"><span className="brand-mark"><img src="/avatar-yuta.jpg" alt="Yuta Okkotsu 头像"/></span><span className="brand-copy">YUTA OKKOTSU<small>VIDEO EDITOR / 影像剪辑师</small></span></a>

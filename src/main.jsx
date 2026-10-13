@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Asterisk, AtSign, Check, Clapperboard, Copy, Film, Instagram, Mail, Menu, MoveUpRight, Play, Plus, Video, X } from 'lucide-react';
+import { featuredProjects } from './projects.js';
 import './style.css';
 
-const projects = [
-  { id: '01', title: 'Veil登神长阶', type: 'VALORANT · FRAG MOVIE', year: '2025', video: '/videos/cxyveil.mp4', ratio: 'wide', note: '高光时刻，值得被重新看见' },
-  { id: '02', title: 'MAMA', type: 'CS · FRAG MOVIE', year: '2025', video: '/videos/H9999.mp4', ratio: 'tall', note: '把每一次精准击杀，留在节奏里' },
-  { id: '03', title: '卡点', type: 'FPS · RHYTHM EDIT', year: '2025', video: '/videos/ka-dian.mp4', ratio: 'tall', note: '缘分落地生根是我们' },
-  { id: '04', title: '馈赠', type: 'FPS · FRAG MOVIE', year: '2025', video: '/videos/gift.mp4', ratio: 'tall', note: '把高光时刻，留给值得记住的瞬间' },
-  { id: '05', title: '残局开头', type: 'FPS · FRAG MOVIE', year: '2025', video: '/videos/AAAme.mp4', ratio: 'wide', note: '让操作与音乐，在同一个瞬间爆发' },
-  { id: '06', title: '随便搞搞', type: 'FPS · FRAG MOVIE', year: '2026', video: '/videos/随便搞搞.mp4', ratio: 'wide', note: '把每一帧灵感，剪成新的高光' },
-  { id: '07', title: '切刀慢动作', type: 'FPS · GAMEPLAY EDIT', year: '2025', video: '/videos/15.mp4', ratio: 'tall', note: '缘分落地生根是我们' },
-];
-const featuredProjects = projects.slice(0, 4);
-const remainingProjects = projects.slice(3);
 const strengths = ['视频节奏', '影像审美', '音画和谐', '客户满意'];
 const workflow = [
   ['客户下单', '确认作品类型、用途与交付时间，先把需求和方向梳理清楚'],
@@ -33,6 +23,31 @@ function App() {
   const [contactOpen, setContactOpen] = useState(false);
   const [wechatCopied, setWechatCopied] = useState(false);
   useEffect(() => { const fn = () => setScrolled(window.scrollY > 40); window.addEventListener('scroll', fn); return () => window.removeEventListener('scroll', fn); }, []);
+  useEffect(() => {
+    const selector = '.section-kicker, .intro-grid, .work-heading, .project-card, .skills-intro, .skill-word, .process-heading, .process-step, .process-foot, .clients-title, .client-card, .contact-center, .contact-bottom';
+    const elements = [...document.querySelectorAll(selector)];
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('motion-visible'));
+      return undefined;
+    }
+    const siblingIndexes = new Map();
+    elements.forEach((element) => {
+      const parent = element.parentElement;
+      const index = siblingIndexes.get(parent) ?? 0;
+      siblingIndexes.set(parent, index + 1);
+      element.style.setProperty('--motion-delay', `${Math.min(index * 100, 400)}ms`);
+      element.classList.add('motion-reveal');
+    });
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('motion-visible');
+        currentObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -48px 0px' });
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     if (!contactOpen) return undefined;
     const onKeyDown = (event) => { if (event.key === 'Escape') setContactOpen(false); };

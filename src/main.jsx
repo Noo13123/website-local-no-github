@@ -18,15 +18,30 @@ function FilmStrip() {
   return <div className="film-strip" aria-hidden="true"><div className="film-holes"/><div className="film-center"><span>FRAME BY FRAME&nbsp; · &nbsp;FRAME BY FRAME&nbsp; · &nbsp;FRAME BY FRAME&nbsp; · &nbsp;</span><span>FRAME BY FRAME&nbsp; · &nbsp;FRAME BY FRAME&nbsp; · &nbsp;FRAME BY FRAME&nbsp; · &nbsp;</span></div><div className="film-holes"/></div>;
 }
 function App() {
+  const [loaderVisible, setLoaderVisible] = useState(true);
+  const [loaderLeaving, setLoaderLeaving] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const [wechatCopied, setWechatCopied] = useState(false);
+  useEffect(() => {
+    document.body.classList.add('site-loader-active');
+    const leaveTimer = window.setTimeout(() => setLoaderLeaving(true), 1120);
+    const hideTimer = window.setTimeout(() => {
+      setLoaderVisible(false);
+      document.body.classList.remove('site-loader-active');
+    }, 1640);
+    return () => {
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(hideTimer);
+      document.body.classList.remove('site-loader-active');
+    };
+  }, []);
   useEffect(() => { const fn = () => setScrolled(window.scrollY > 40); window.addEventListener('scroll', fn); return () => window.removeEventListener('scroll', fn); }, []);
   useEffect(() => {
     const selector = '.section-kicker, .intro-grid, .work-heading, .project-card, .skills-intro, .skill-word, .process-heading, .process-step, .process-foot, .clients-title, .client-card, .contact-center, .contact-bottom';
     const elements = [...document.querySelectorAll(selector)];
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+    if (!('IntersectionObserver' in window)) {
       elements.forEach((element) => element.classList.add('motion-visible'));
       return undefined;
     }
@@ -73,6 +88,10 @@ function App() {
   };
   const closeMenu = () => setMenuOpen(false);
   return <>
+    {loaderVisible && <div className={`site-loader${loaderLeaving ? ' is-leaving' : ''}`} role="status" aria-label="网站正在载入">
+      <div className="loader-top mono"><span>YUTA / 乙骨</span><span>PERSONAL PORTFOLIO</span></div>
+      <div className="loader-center"><div className="loader-overline mono">你的高光，我来生成</div><div className="loader-name">YU<span className="loader-highlight">TA</span> OKKOTSU<span>.</span></div><div className="loader-track"><span/></div><div className="loader-caption mono">THE NEXT FRAME STARTS HERE</div></div>
+    </div>}
     <header className={`nav ${scrolled ? 'nav-scrolled' : ''}`}>
       <a href="#home" className="brand" onClick={closeMenu}><span className="brand-mark"><img src="/avatar-yuta.jpg" alt="Yuta Okkotsu 头像"/></span><span className="brand-copy">YUTA OKKOTSU<small>VIDEO EDITOR / 影像剪辑师</small></span></a>
       <nav className={menuOpen ? 'nav-links open' : 'nav-links'}>
@@ -84,7 +103,7 @@ function App() {
 
     <main>
       <section className="hero" id="home">
-        <video className="hero-video" autoPlay muted loop playsInline preload="metadata"><source src="/cxyveil.mp4" type="video/mp4"/></video>
+        <video className="hero-video" poster="/hero-poster.png" autoPlay muted loop playsInline preload="metadata"><source src="/cxyveil.mp4" type="video/mp4"/></video>
         <div className="hero-shade"/><div className="hero-grid"/>
         <div className="hero-meta mono"><span>INDEPENDENT VIDEO EDITOR</span><span>BASED IN SHANGHAI · AVAILABLE WORLDWIDE</span></div>
         <div className="hero-content"><div className="eyebrow"><span className="status-dot"/> VIDEO EDITOR <i>/</i> FRAG MOVIE CREATOR</div><h1>让每一次击杀<br/><em>都成为回忆</em></h1><div className="hero-bottom"><p>Yuta Okkotsu<br/>始于兴趣 忠于热爱</p><a href="#work" className="circle-link"><span>探索作品</span><ArrowDown size={18}/></a></div></div>

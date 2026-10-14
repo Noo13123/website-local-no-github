@@ -7,7 +7,7 @@ import './style.css';
 function Works() {
   React.useEffect(() => {
     const elements = [...document.querySelectorAll('.works-content .section-kicker, .works-heading, .full-project, .works-home-link')];
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+    if (!('IntersectionObserver' in window)) {
       elements.forEach((element) => element.classList.add('motion-visible'));
       return undefined;
     }
